@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            {% if message %}
+                <div class="alert alert-warning">{{ message }}</div>
+            {% endif %}
+            {% csrf_token %}
+            <h2 class="text-center">下属日志</h2>
+            {{ out | safe }}
+        </div>
+    </div>
+                        
+{% endblock %}

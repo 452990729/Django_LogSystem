@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            {% if message %}
+                <div class="alert alert-warning">{{ message }}</div>
+            {% endif %}
+            {% csrf_token %}
+            <h2 class="text-center">日志内容</h2>
+            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#myModal">删除</button>
+            <table class="table table-hover row">
+                <thead class="thead-light w-100">
+                    <tr class="row">
+                        <th class="col-4">类别</th>
+                        <th class="col-8">内容</th>
+                    </tr>
+                </thead>
+                <tbody class="w-100">
+                <tr class="row">
+                    <th class="col-4">日志日期</th>
+                    <th class="col-8">{{ ReportDate }}</th>
+                </tr>
+                <tr class="row">
+                    <th class="col-4">日志报告人</th>
+                    <th class="col-8">{{ ReportUser }}</th>
+                </tr>
+                <tr class="row">
+                    <th class="col-4">当前工作</th>
+                    <th class="col-8">{{ ReportWork | safe}}</th>
+                </tr>
+                <tr class="row">
+                    <th class="col-4">当前困难</th>
+                    <th class="col-8">{{ ReportProblem | safe }}</th>
+                </tr>
+                <tr class="row">
+                    <th class="col-4">下一步计划</th>
+                    <th class="col-8">{{ ReportPlan | safe }}</th>
+                </tr>
+                <tr class="row">
+                    <th class="col-4">上级评论</th>
+                    <th class="col-8">{{ Com | safe }}</th>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="modal fade" id="myModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">警告</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    真的要删除{{ project }}的数据吗？？？
+                </div>
+                <div class="modal-footer">
+                    <a href="/Report/{{ project }}/del/" class="btn btn-danger" role="button">确定</a>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+                        
+{% endblock %}

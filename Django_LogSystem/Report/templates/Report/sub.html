@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block css %}
+  <link rel="stylesheet" href="{% static 'plugins/DataTables/DataTables-1.10.21/css/jquery.dataTables.min.css' %}">
+  <link rel="stylesheet" href="{% static 'plugins/DataTables/Buttons-1.6.2/css/buttons.dataTables.min.css' %}">
+{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <table id="PrevData" class="display" style="width: 100%">
+                <thead>
+                <tr>
+                    <th class="text-center">日志编号</th>
+                    <th class="text-center">日志记录人</th>
+                    <th class="text-center">日志日期</th>
+                </tr>
+                </thead>
+            </table>
+            <br></br>
+            <a href="/Report/subdetail/1" class="btn btn-info" role="button">当天内</a>
+            <a href="/Report/subdetail/5" class="btn btn-info" role="button">五天内</a>
+        </div>
+    </div>
+{% endblock %}
+{% block js %}
+  <script src="{% static 'plugins/DataTables/DataTables-1.10.21/js/jquery.dataTables.min.js' %}"></script>
+  <script src="{% static 'plugins/DataTables/Buttons-1.6.2/js/dataTables.buttons.min.js' %}"></script>
+  <script src="{% static 'plugins/DataTables/Buttons-1.6.2/js/buttons.flash.min.js' %}"></script>
+  <script src="{% static 'plugins/DataTables/Buttons-1.6.2/js/buttons.html5.min.js' %}"></script>
+  <script src="{% static 'plugins/DataTables/Buttons-1.6.2/js/buttons.print.min.js' %}"></script>
+  <script src="{% static 'plugins/DataTables/JSZip-2.5.0/jszip.min.js' %}"></script>
+  <script src="{% static 'plugins/DataTables/pdfmake-0.1.36/pdfmake.min.js' %}"></script>
+  <script src="{% static 'plugins/DataTables/pdfmake-0.1.36/vfs_fonts.js' %}"></script>
+  <script type="text/javascript">
+          $('#PrevData').DataTable({
+              "pagingType": "simple_numbers",
+              searching: true,
+              destroy : true,
+              stateSave: true,
+              data: {{ userlog | safe }},
+              'columns': [
+              {'data': '日志编号',
+                  'render': function (data){
+                      return '<a href="/Report/sub/subsingledetail/'+data+'/">'+data+'</a>'}},
+              {'data': '日志记录人'},
+              {'data': '日志日期'},
+              ],
+              'language': {
+                  'url': '//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Chinese.json'
+              },
+              dom: 'Bfrtip',
+              button: ['copy', 'csv', 'excel', 'pdf', 'print'],
+          })
+  </script>
+{% endblock %}

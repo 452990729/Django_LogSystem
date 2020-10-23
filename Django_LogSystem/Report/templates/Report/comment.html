@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            {% if message %}
+                <div class="alert alert-warning">{{ message }}</div>
+            {% endif %}
+            {% csrf_token %}
+            <h2 class="text-center">日志内容</h2>
+            <table class="table table-hover row">
+                <thead class="thead-light w-100">
+                    <tr class="row">
+                        <th class="col-4">类别</th>
+                        <th class="col-8">内容</th>
+                    </tr>
+                </thead>
+                <tbody class="w-100">
+                <tr class="row">
+                    <th class="col-4">日志日期</th>
+                    <th class="col-8">{{ ReportDate }}</th>
+                </tr>
+                <tr class="row">
+                    <th class="col-4">日志报告人</th>
+                    <th class="col-8">{{ ReportUser }}</th>
+                </tr>
+                <tr class="row">
+                    <th class="col-4">当前工作</th>
+                    <th class="col-8">{{ ReportWork | safe}}</th>
+                </tr>
+                <tr class="row">
+                    <th class="col-4">当前困难</th>
+                    <th class="col-8">{{ ReportProblem | safe }}</th>
+                </tr>
+                <tr class="row">
+                    <th class="col-4">下一步计划</th>
+                    <th class="col-8">{{ ReportPlan | safe }}</th>
+                </tr>
+                <tr class="row">
+                    <th class="col-4">上级评论</th>
+                    <th class="col-8">{{ Com | safe }}</th>
+                </tr>
+                </tbody>
+            </table>
+            <br></br>
+            <form class='form-login' action="/Report/sub/comment/{{ project }}/" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ SubCommentForm.as_p }}
+                <button type="reset" class="btn btn-default pull-left">重置</button>
+                <button type="submit" class="btn btn-primary pull-right">提交</button>
+            </form>
+        </div>
+    </div>
+
+
+                        
+{% endblock %}
+
+{% block js %}
+<script src="{% static 'plugins/kindeditor/kindeditor-all.js' %}"></script>
+    <script type="text/javascript">
+        KindEditor.ready(function(K) {
+            window.editor = K.create('#id_ReportComment',{
+                width:"100%",
+                height:"300",
+                resizeType:0,
+                extraFileUploadParams:{
+                    csrfmiddlewaretoken:$("[name='csrfmiddlewaretoken']").val()
+                },
+                items:[     'source', '|', 'undo', 'redo', '|', 'preview', 'print', 'template', 'code', 'cut', 'copy', 'paste',
+                            'plainpaste', 'wordpaste', '|', 'justifyleft', 'justifycenter', 'justifyright',
+                            'justifyfull', 'insertorderedlist', 'insertunorderedlist', 'indent', 'outdent', 'subscript',
+                            'superscript', 'clearhtml', 'quickformat', 'selectall', '|', 'fullscreen', '/',
+                            'formatblock', 'fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold',
+                            'italic', 'underline', 'strikethrough', 'lineheight', 'removeformat',]
+            });
+        });
+    </script>
+{% endblock %}
