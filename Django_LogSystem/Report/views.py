@@ -4,6 +4,7 @@ from . import models
 from .forms import NewReport,CommentForm
 from Login.models import LoginUser
 from django.utils import timezone
+from notifications.signals import notify
 # Create your views here.
 
 def CreateNew(request):
@@ -34,6 +35,12 @@ def CreateNew(request):
             new_project.ReportProblem = ReportProblem
             new_project.ReportPlan = ReportPlan
             new_project.save()
+            notify.send(
+                LoginUser.objects.get(username=user),
+                recipient=LoginUser.objects.get(username=LoginUser.objects.get(username=user).info_right),
+                verb='提交了日志',
+                target=new_project,
+            )
             return redirect('/Report/loginfor/')
         return render(request, 'Report/new.html', locals())
     NewReportForm = NewReport()
@@ -118,6 +125,7 @@ def SubSingleDetail(request, project):
 
 def SubComment(request, project):
     isactive = 'sub'
+    user = request.session['user_name']
     if request.session.get('is_login') == None:
         return render(request, 'LoginWarning.html', locals())
     Project_model = models.ReportsInfo.objects.get(ReportNumber=project)
@@ -138,6 +146,12 @@ def SubComment(request, project):
         if SubCommentForm.is_valid():
             ReportComment = SubCommentForm.cleaned_data['ReportComment']
             models.Comments.objects.create(TargetReport=Project_model, ReportComment=ReportComment)
+            notify.send(
+                LoginUser.objects.get(username=user),
+                recipient=LoginUser.objects.get(username=ReportUser),
+                verb='评论了日志',
+                target=Project_model,
+            )
             return render(request, 'Report/subsingledetail.html', locals())
         return render(request, 'Report/comment.html', locals())
     return render(request, 'Report/comment.html', locals())

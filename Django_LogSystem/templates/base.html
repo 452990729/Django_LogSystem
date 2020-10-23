@@ -11,6 +11,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
   <title>Genetic Disease</title>
   {% load staticfiles %}
+  {% load notifications_tags %}
+  {% notifications_unread as unread_count %}
   <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="{% static 'plugins/fontawesome-free/css/all.min.css' %}">
   <!-- Theme style -->
@@ -48,10 +50,25 @@ scratch. This page gets rid of all links and provides the needed markup only.
         {% if request.session.is_login %}
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+                {% if unread_count %}
+                <svg viewBox="0 0 8 8"
+                     width="8px"
+                     height="8px">
+                    <circle cx="4"
+                            cy="4"
+                            r="4"
+                            fill="#ff6b6b"
+                            ></circle>
+                </svg>
+                {% endif %}
                 {{ request.session.user_name }}
             </a>
             <div class="dropdown-menu">
-                <a href="/notice/" class="nav-link">通知</a>
+                <a href="/notice/list/" class="nav-link">通知
+                    {% if unread_count %}
+                    <span class="badge badge-danger">{{ unread_count }}</span>
+                    {% endif %}
+                </a>
                 <a href="/Report/new/" class="nav-link">填写日志</a>
                 <a href="/home/" class="nav-link">个人信息</a>
                 <a href="/logout/" class="nav-link">登出</a>

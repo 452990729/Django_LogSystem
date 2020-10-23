@@ -1,5 +1,7 @@
 import hashlib
 from django.shortcuts import render,redirect
+from django.contrib import auth
+from django.contrib.auth.hashers import make_password
 from . import models
 from . import forms
 from .forms import UserForm,RegisterForm
@@ -21,17 +23,16 @@ def login(request):
         if login_form.is_valid():
             username = login_form.cleaned_data['username']
             password = login_form.cleaned_data['password']
-            try:
-                user = models.LoginUser.objects.get(username=username)
-                if user.password == hash_code(password):
-                    request.session['is_login'] = True
-                    request.session['user_id'] = user.id
-                    request.session['user_name'] = user.username
-                    return redirect('/index/')
-                else:
-                    message = "uncorrect passwd！"
-            except:
-                message = "uncorrect user！"
+            user = auth.authenticate(username=username, password=password)
+            if user:
+                auth.login(request, user)
+                request.session['is_login'] = True
+                request.session['user_id'] = user.id
+                request.session['user_name'] = user.username
+                return redirect('/index/')
+            else:
+                 message = "用户名或者密码不对"
+                 return render(request, 'login/login.html', locals())
         return render(request, 'login/login.html', locals())
     login_form = UserForm()
     return render(request,'login/login.html', locals())
@@ -41,27 +42,27 @@ def register(request):
         return redirect("/index/")
     if request.method == "POST":
         register_form = RegisterForm(request.POST)
-        message = "please check in the content！"
+        message = "请检查输入内容！"
         if register_form.is_valid():
             username = register_form.cleaned_data['username']
             password1 = register_form.cleaned_data['password1']
             password2 = register_form.cleaned_data['password2']
             email = register_form.cleaned_data['email']
             if password1 != password2:
-                message = "Enter the password twice is different!"
+                message = "两次输入密码不一致！"
                 return render(request, 'login/register.html', locals())
             else:
                 same_name_user = models.LoginUser.objects.filter(username=username)
                 if same_name_user:
-                    message = "User already exists, please re-select username"
+                    message = "用户名已存在，请换一个！"
                     return render(request, 'login/register.html', locals())
                 same_email_user = models.LoginUser.objects.filter(email=email)
-                if same_email_user: 
-                    message = "The email address has been registered, please use another email address"
+                if same_email_user:
+                    message = "邮箱已经被使用，请换一个！"
                     return render(request, 'login/register.html', locals())
                 new_user = models.LoginUser()
                 new_user.username = username
-                new_user.password = hash_code(password1)
+                new_user.password = make_password(password1)
                 new_user.email = email
                 new_user.save()
                 return redirect('/login/')
@@ -95,9 +96,9 @@ def ModUser(request):
             old_password = change_form.cleaned_data['password']
             new_password1 = change_form.cleaned_data['new_password1']
             new_password2 = change_form.cleaned_data['new_password2']
-            if user_model.password == old_password:
+            if user_model.check_password(old_password):
                 if new_password1 == new_password2:
-                    user_model.password = hash_code(new_password1)
+                    user_model.password = make_password(new_password1)
                     user_model.save()
                     return render(request, 'login/homepage.html', locals())
                 else:
