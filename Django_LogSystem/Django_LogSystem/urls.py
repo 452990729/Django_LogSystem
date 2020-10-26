@@ -15,8 +15,11 @@ Including another URLconf
 """
 import notifications.urls
 from django.contrib import admin
-from django.urls import path,include
+from django.urls import path,include,re_path
+from django.views.static import serve
+from django.conf import settings
 from Login import views
+from Report import views as ReportViews
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -30,5 +33,7 @@ urlpatterns = [
     path('notice/', include('Notice.urls', namespace='notice')),
     path('Report/', include(('Report.urls', 'Report'), namespace='Report')),
     path('captcha', include('captcha.urls')),
+    re_path(r"media/(?P<path>.*)$", serve, {"document_root": settings.MEDIA_ROOT}),
+    path('Upload/', ReportViews.Upload),
     path('', views.WebHome),
 ]

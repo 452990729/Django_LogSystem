@@ -129,6 +129,9 @@ STATICFILES_DIRS = [
 ]
 
 # Host
-ALLOWED_HOSTS = ['172.16.11.218', ]
+ALLOWED_HOSTS = ['172.16.11.218', '0.0.0.0']
 APPEND_SLASH=False
 AUTH_USER_MODEL = "Login.LoginUser"
+
+MEDIA_ROOT= os.path.join(BASE_DIR, "media")
+MEDIA_URL = "/media/"

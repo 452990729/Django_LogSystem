@@ -1,5 +1,7 @@
-import datetime
-from django.shortcuts import render,redirect
+import os
+import time
+import json
+from django.shortcuts import render,redirect,HttpResponse
 from . import models
 from .forms import NewReport,CommentForm
 from Login.models import LoginUser
@@ -177,4 +179,20 @@ def SubDetail(request, number):
                 out += '</tbody></table><br />'
         out += '<br /><br /><br /><br />'
     return render(request, 'Report/subdetail.html', locals())
+
+def Upload(request):
+    file_obj = request.FILES.get('UploadFile')
+    file_type = request.GET.get('dir')
+    file_obj.name = '{}{}'.format(time.time(), file_obj.name)
+    file_dir = 'media{}{}'.format(os.sep, file_type)
+    if not os.path.exists(file_dir):
+        os.makedirs(file_dir)
+    file_path = os.path.join("media", file_type, file_obj.name)
+    with open(file_path, 'wb') as f:
+        for line in file_obj:
+            f.write(line)
+    print(file_type)
+    print(file_obj.name)
+    dic = {'error': 0, 'url': '/media/{}/{}'.format(file_type, file_obj.name), 'message': '出现内部错误'}
+    return HttpResponse(json.dumps(dic))
 
