@@ -81,6 +81,23 @@ def Detail(request, project):
     Com = com
     return render(request, 'Report/detail.html', locals())
 
+def SubIndex(request, person):
+    isactive = 'loginfor'
+    if request.session.get('is_login') == None:
+        return render(request, 'LoginWarning.html', locals())
+    list_project_model = models.ReportsInfo.objects.filter(ReportUser=person)
+    data_list = []
+    for data_info in list_project_model:
+        data_list.append({
+            '日志编号':data_info.ReportNumber,
+            '日志记录人':data_info.ReportUser,
+            '日志日期':data_info.ReportDate.strftime('%Y-%m-%d %H:%M:%S'),
+        })
+    data_dic = {}
+    data_dic['userlog'] = data_list
+    data_dic['person'] = person
+    return render(request, 'Report/personindex.html', data_dic)
+
 def Del(request, project):
     isactive = 'loginfor'
     if request.session.get('is_login') == None:

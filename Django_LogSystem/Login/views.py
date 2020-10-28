@@ -96,7 +96,7 @@ def ModUser(request):
             old_password = change_form.cleaned_data['password']
             new_password1 = change_form.cleaned_data['new_password1']
             new_password2 = change_form.cleaned_data['new_password2']
-            if user_model.check_password(old_password):
+            if user_model.check_password(old_password, user_model.password):
                 if new_password1 == new_password2:
                     user_model.password = make_password(new_password1)
                     user_model.save()
