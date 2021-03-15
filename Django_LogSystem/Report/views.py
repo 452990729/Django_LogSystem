@@ -16,7 +16,7 @@ def CreateNew(request):
     user = request.session['user_name']
     list_ob = models.ReportsInfo.objects.order_by('ReportDate').filter(ReportUser=user)
     if len(list_ob) > 0:
-        ob = list_ob[0]
+        ob = list_ob.reverse()[0]
         PreviesDate = ob.ReportDate.strftime('%Y-%m-%d %H:%M:%S')
         PreviesPlan = ob.ReportPlan
     else:
@@ -208,8 +208,6 @@ def Upload(request):
     with open(file_path, 'wb') as f:
         for line in file_obj:
             f.write(line)
-    print(file_type)
-    print(file_obj.name)
     dic = {'error': 0, 'url': '/media/{}/{}'.format(file_type, file_obj.name), 'message': '出现内部错误'}
     return HttpResponse(json.dumps(dic))
 
